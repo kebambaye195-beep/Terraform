@@ -36,7 +36,28 @@ pipeline {
             }
         }
 
-        
+        stage('Analyse SonarQube') {
+            steps {
+                withSonarQubeEnv('sonarqube') { // nom du serveur SonarQube
+                    withCredentials([string(credentialsId: 'jenkins-token', variable: 'SONAR_TOKEN')]) {
+                        sh '''
+                            sonar-scanner \
+                            -Dsonar.projectKey=Mon_Depot_Jenkins \
+                            -Dsonar.sources=. \
+                            -Dsonar.host.url=http://172.17.0.4:9000 \
+                            -Dsonar.login=$SONAR_TOKEN
+                        '''
+                    }
+                }
+            }
+        }
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 1, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
        
         // 🔑 Étape 5 : Connexion à Docker Hub
         stage('Login to DockerHub') {
