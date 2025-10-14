@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         DOCKER_HUB_REPO = 'aminata286'
+        SONAR_ADMIN_TOKEN = credentials('jen-sonar')
     }
 
     triggers {
@@ -35,30 +36,33 @@ pipeline {
                 )
             }
         }
-
-        stage('Analyse SonarQube') {
+stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('sonarqube') { // nom du serveur SonarQube
-                    withCredentials([string(credentialsId: 'jen-sonar', variable: 'SONAR_TOKEN')]) {
-                        sh '''
-                            sonar-scanner \
-                            -Dsonar.projectKey=Mon_Depot_Jenkins \
-                            -Dsonar.sources=. \
-                            -Dsonar.host.url=http://172.17.0.4:9000 \
-                            -Dsonar.login=$SONAR_TOKEN
-                        '''
-                    }
+                withSonarQubeEnv('sonarqube') {
+                    sh '''
+                        sonar-scanner \
+                          -Dsonar.projectKey=Mon_Depot_Jenkins \
+                          -Dsonar.sources=. \
+                          -Dsonar.exclusions=**/node_modules/**,**/coverage/**,**/dist/**,**/build/** \
+                          -Dsonar.tests=. \
+                          -Dsonar.test.inclusions=**/*.test.js,**/*.spec.js \
+                          -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
+                          -Dsonar.newCode.referenceBranch=main \
+                          -Dsonar.host.url=http://172.17.0.2:9000 \
+                          -Dsonar.token=$SONAR_ADMIN_TOKEN
+                    '''
                 }
             }
         }
+
         stage('Quality Gate') {
             steps {
-                timeout(time: 1, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
+                timeout(time: 3, unit: 'MINUTES') {
+                    waitForQualityGate(abortPipeline: true)
                 }
             }
         }
-       
+
         // 🔑 Étape 5 : Connexion à Docker Hub
         stage('Login to DockerHub') {
             steps {
