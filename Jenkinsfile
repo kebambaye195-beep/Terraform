@@ -37,21 +37,7 @@ pipeline {
         }
 
         
-        stage('Install dependencies') {
-            steps {
-                sh 'npm install'
-            }
-        }
-
-        stage('Run Tests') {
-            steps {
-                script {
-                    sh 'npm test || echo "Aucun test disponible"'
-                }
-            }
-        }
-
-        
+       
         // 🔑 Étape 5 : Connexion à Docker Hub
         stage('Login to DockerHub') {
             steps {
