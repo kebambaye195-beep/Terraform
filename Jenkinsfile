@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_REPO = 'kingwest1'
+        DOCKER_HUB_REPO = 'aminata286'
     }
 
     triggers {
@@ -30,7 +30,7 @@ pipeline {
                     extensions: [],
                     userRemoteConfigs: [[
                         credentialsId: 'king-github',
-                        url: 'https://github.com/KingW223/Jenkins-Test2.git'
+                        url: 'https://github.com/Aminata11/jenkins-test.git'
                     ]]
                 )
             }
