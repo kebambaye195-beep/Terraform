@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKER_HUB_REPO = 'aminata286'
-        SONAR_ADMIN_TOKEN = credentials('jen-sonar')
+        SONAR_ADMIN_TOKEN = credentials('sonar-jenkins')
     }
 
     triggers {
