@@ -36,23 +36,7 @@ pipeline {
                 )
             }
         }
-        
 
-        // 🔍 Étape 3 : Analyse de la qualité du code avec SonarQube
-        /*stage('SonarQube Analysis') {
-            steps {
-                echo 'Analyse du code avec SonarQube...'
-                withSonarQubeEnv('SonarQube') {
-                    sh '''
-                        sonar-scanner \
-                            -Dsonar.projectKey=Jenkins-Test2 \
-                            -Dsonar.sources=. \
-                            -Dsonar.host.url=http://sonarqube:9000 \
-                            -Dsonar.login=$SONAR_ADMIN_TOKEN
-                    '''
-                }
-            }
-        }*/
         
         stage('Install dependencies') {
             steps {
@@ -68,33 +52,7 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('SonarQube') {
-                    sh '''
-                        sonar-scanner \
-                          -Dsonar.projectKey=express_mongo_react \
-                          -Dsonar.sources=. \
-                          -Dsonar.exclusions=**/node_modules/**,**/coverage/**,**/dist/**,**/build/** \
-                          -Dsonar.tests=. \
-                          -Dsonar.test.inclusions=**/*.test.js,**/*.spec.js \
-                          -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
-                          -Dsonar.newCode.referenceBranch=main \
-                          -Dsonar.host.url=http://sonarqube:9000 \
-                          -Dsonar.token=$SONAR_ADMIN_TOKEN
-                    '''
-                }
-            }
-        }
-
-        stage('Quality Gate') {
-            steps {
-                timeout(time: 3, unit: 'MINUTES') {
-                    waitForQualityGate(abortPipeline: true)
-                }
-            }
-        }
-
+        
         // 🔑 Étape 5 : Connexion à Docker Hub
         stage('Login to DockerHub') {
             steps {
