@@ -29,7 +29,7 @@ pipeline {
                     branches: [[name: '*/main']],
                     extensions: [],
                     userRemoteConfigs: [[
-                        credentialsId: 'king-github',
+                        credentialsId: 'credential-git',
                         url: 'https://github.com/Aminata11/jenkins-test.git'
                     ]]
                 )
