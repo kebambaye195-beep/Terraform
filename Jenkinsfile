@@ -3,7 +3,6 @@ pipeline {
 
     environment {
         DOCKER_HUB_REPO = 'kingwest1'
-        SONAR_ADMIN_TOKEN = credentials('sonar-id')
     }
 
     triggers {
@@ -105,14 +104,14 @@ pipeline {
             emailext(
                 subject: "✅ Build SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: "Pipeline réussi 🎉\nDétails : ${env.BUILD_URL}",
-                to: "naziftelecom2@gmail.com"
+                to: "seckaminata87@gmail.com"
             )
         }
         failure {
             emailext(
                 subject: "❌ Build FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: "Le pipeline a échoué 😞\nDétails : ${env.BUILD_URL}",
-                to: "naziftelecom2@gmail.com"
+                to: "seckaminata87@gmail.com"
             )
         }
         always {
