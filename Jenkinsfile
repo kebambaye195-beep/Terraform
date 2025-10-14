@@ -39,7 +39,7 @@ pipeline {
         stage('Analyse SonarQube') {
             steps {
                 withSonarQubeEnv('sonarqube') { // nom du serveur SonarQube
-                    withCredentials([string(credentialsId: 'jenkins-token', variable: 'SONAR_TOKEN')]) {
+                    withCredentials([string(credentialsId: 'jen-sonar', variable: 'SONAR_TOKEN')]) {
                         sh '''
                             sonar-scanner \
                             -Dsonar.projectKey=Mon_Depot_Jenkins \
