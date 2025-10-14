@@ -37,28 +37,33 @@ pipeline {
             }
         }
 
-        stage('Analyse SonarQube') {
+        stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('sonarqube') { // nom du serveur SonarQube
-                    withCredentials([string(credentialsId: 'sonar-jenkins', variable: 'SONAR_TOKEN')]) {
-                        sh '''
-                            sonar-scanner \
-                            -Dsonar.projectKey=Mon_Depot_Jenkins \
-                            -Dsonar.sources=. \
-                            -Dsonar.host.url=http://mon-reseau-sonar:9000 \
-                            -Dsonar.login=$SONAR_TOKEN
-                        '''
-                    }
-                }
+                echo "🔍 Analyse du code avec SonarQube..."
+                withSonarQubeEnv('sonarqube') {
+    withCredentials([string(credentialsId: 'sonar-jenkins', variable: 'SONAR_TOKEN')]) {
+        sh '''
+            /opt/sonar-scanner/bin/sonar-scanner \
+            -Dsonar.projectKey=sonarqube \
+            -Dsonar.sources=. \
+            -Dsonar.host.url=http://mon-reseau-sonar:9000 \
+            -Dsonar.login=$SONAR_TOKEN
+        '''
+    }
+}
+
             }
+        } // 👈👉 Accolade fermante manquante ajoutée ici !
+                
+       stage('Quality Gate') {
+    steps {
+        echo "🛡️ Vérification du Quality Gate..."
+        timeout(time: 2, unit: 'MINUTES') {
+            waitForQualityGate abortPipeline: true
         }
-        stage('Quality Gate') {
-            steps {
-                timeout(time: 1, unit: 'MINUTES') {
-                    waitForQualityGate abortPipeline: true
-                }
-            }
-        }
+    }
+}
+
 
         // 🔑 Étape 5 : Connexion à Docker Hub
         stage('Login to DockerHub') {
