@@ -45,7 +45,7 @@ pipeline {
                             sonar-scanner \
                             -Dsonar.projectKey=Mon_Depot_Jenkins \
                             -Dsonar.sources=. \
-                            -Dsonar.host.url=http://172.17.0.4:9000 \
+                            -Dsonar.host.url=http://mon-reseau-sonar:9000 \
                             -Dsonar.login=$SONAR_TOKEN
                         '''
                     }
