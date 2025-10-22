@@ -76,24 +76,26 @@ pipeline {
             }
         }
 
-        // 🚀 Étape 5 : Terraform Init & Apply
         stage('Terraform Init & Apply') {
-            steps {
-                echo 'Déploiement de l’infrastructure avec Terraform...'
-                dir('./terraform') {
-                    withEnv([
-                        "AWS_ACCESS_KEY_ID=${env.AWS_ACCESS_KEY_ID}",
-                        "AWS_SECRET_ACCESS_KEY=${env.AWS_SECRET_ACCESS_KEY}",
-                        "AWS_SESSION_TOKEN=${env.AWS_SESSION_TOKEN}",
-                        "AWS_DEFAULT_REGION=${env.AWS_DEFAULT_REGION}"
-                    ]) {
-                        sh 'terraform init'
-                        sh 'terraform plan -out=tfplan'
-                        sh 'terraform apply -auto-approve tfplan'
-                    }
-                }
+    steps {
+        echo 'Déploiement de l’infrastructure avec Terraform...'
+        dir('./terraform') {
+            withEnv([
+                "AWS_ACCESS_KEY_ID=${env.AWS_ACCESS_KEY_ID}",
+                "AWS_SECRET_ACCESS_KEY=${env.AWS_SECRET_ACCESS_KEY}",
+                "AWS_SESSION_TOKEN=${env.AWS_SESSION_TOKEN}",
+                "AWS_DEFAULT_REGION=${env.AWS_DEFAULT_REGION}"
+            ]) {
+                sh '''
+                docker run --rm -v $PWD:/workspace -w /workspace hashicorp/terraform:latest init
+                docker run --rm -v $PWD:/workspace -w /workspace hashicorp/terraform:latest plan -out=tfplan
+                docker run --rm -v $PWD:/workspace -w /workspace hashicorp/terraform:latest apply -auto-approve tfplan
+                '''
             }
         }
+    }
+}
+
 
         // 📌 Étape 6 : Récupération des outputs Terraform
         stage('Get Terraform Outputs') {
