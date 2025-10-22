@@ -11,8 +11,8 @@ terraform {
 
 provider "aws" {
   region                  = var.region
-  shared_credentials_files = ["~/.aws/credentials"] # utile si tu testes en local
-  profile                 = "default"
+  # shared_credentials_files = ["~/.aws/credentials"] # utile si tu testes en local
+  # profile                 = "default"
 
   # Si tu veux utiliser les variables d'environnement (depuis Jenkins ou CLI)
   access_key = var.aws_access_key
