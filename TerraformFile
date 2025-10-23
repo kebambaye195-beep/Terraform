@@ -36,7 +36,7 @@ pipeline {
                         variable: 'AWS_SESSION_TOKEN'
                     )
                 ]) {
-                    dir('infra') {
+                    dir('terraform') {
                         sh '''
                             terraform init
                             terraform plan -var-file=terraform.tfvars
@@ -59,7 +59,7 @@ pipeline {
                         variable: 'AWS_SESSION_TOKEN'
                     )
                 ]) {
-                    dir('infra') {
+                    dir('terraform') {
                         sh '''
                             terraform apply -auto-approve -var-file=terraform.tfvars
                         '''
