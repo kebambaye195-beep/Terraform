@@ -2,11 +2,8 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_REPO       = 'aminata286'
-        AWS_ACCESS_KEY_ID     = credentials('aws-access-key-id')
-        AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
-        AWS_SESSION_TOKEN     = credentials('aws-session-token')
-        AWS_DEFAULT_REGION    = 'us-west-2'
+        DOCKER_HUB_REPO = 'aminata286'
+        
     }
 
     triggers {
@@ -40,17 +37,50 @@ pipeline {
             }
         }
 
-        // 🔑 Étape 2 : Connexion à Docker Hub
-        stage('DockerHub Login') {
+        // Étape du pipeline dédiée à l'analyse SonarQube
+          /* stage('SonarQube Analysis') {
+            steps {
+                // Active l'environnement SonarQube configuré dans Jenkins
+                // "SonarQubeServer" est le nom que tu as défini dans "Manage Jenkins > Configure System"
+                withSonarQubeEnv('SonarQubeServer') { 
+                    script {
+                        // Récupère le chemin du SonarQubeScanner installé via "Global Tool Configuration"
+                        def scannerHome = tool 'SonarQubeScanner' 
+                        
+                        // Exécute la commande sonar-scanner pour analyser le code
+                        // Le scanner envoie les résultats au serveur SonarQube
+                        sh "${scannerHome}/bin/sonar-scanner"
+                    }
+                }
+            }
+        }
+
+        // Étape du pipeline qui vérifie le Quality Gate
+        stage('Quality Gate') {
+            steps {
+                // Définit un délai maximum de 3 minutes pour attendre la réponse de SonarQube
+                timeout(time: 2, unit: 'MINUTES') {
+                    // Attend le résultat du Quality Gate (succès ou échec)
+                    // Si le Quality Gate échoue, le pipeline est automatiquement interrompu (abortPipeline: true)
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        } */
+        
+
+
+
+        // 🔑 Étape 5 : Connexion à Docker Hub
+        stage('Login to DockerHub') {
             steps {
                 echo 'Connexion à Docker Hub...'
-                withCredentials([usernamePassword(credentialsId: 'cred-hub-tera', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                withCredentials([usernamePassword(credentialsId: 'credential-hub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh 'echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin'
                 }
             }
         }
 
-        // 🛠️ Étape 3 : Build Docker Images
+        // 🛠️ Étape 6 : Construction de l’image backend
         stage('Build Backend Image') {
             steps {
                 echo 'Construction de l’image backend...'
@@ -58,6 +88,7 @@ pipeline {
             }
         }
 
+        // 🛠️ Étape 7 : Construction de l’image frontend
         stage('Build Frontend Image') {
             steps {
                 echo 'Construction de l’image frontend...'
@@ -65,7 +96,7 @@ pipeline {
             }
         }
 
-        // 📤 Étape 4 : Push Docker Images
+        // 📤 Étape 8 : Push des images vers Docker Hub
         stage('Push Images') {
             steps {
                 echo 'Envoi des images vers Docker Hub...'
@@ -76,42 +107,7 @@ pipeline {
             }
         }
 
-        stage('Terraform Init & Apply') {
-    steps {
-        echo 'Déploiement de l’infrastructure avec Terraform...'
-        dir('./terraform') {
-            withEnv([
-                "AWS_ACCESS_KEY_ID=${env.AWS_ACCESS_KEY_ID}",
-                "AWS_SECRET_ACCESS_KEY=${env.AWS_SECRET_ACCESS_KEY}",
-                "AWS_SESSION_TOKEN=${env.AWS_SESSION_TOKEN}",
-                "AWS_DEFAULT_REGION=${env.AWS_DEFAULT_REGION}"
-            ]) {
-                sh '''
-                docker run --rm -v $PWD:/workspace -w /workspace hashicorp/terraform:latest init
-                docker run --rm -v $PWD:/workspace -w /workspace hashicorp/terraform:latest plan -out=tfplan
-                docker run --rm -v $PWD:/workspace -w /workspace hashicorp/terraform:latest apply -auto-approve tfplan
-                '''
-            }
-        }
-    }
-}
-
-
-        // 📌 Étape 6 : Récupération des outputs Terraform
-        stage('Get Terraform Outputs') {
-            steps {
-                dir('./terraform') {
-                    script {
-                        env.EC2_IP = sh(script: "terraform output -raw ec2_public_ip", returnStdout: true).trim()
-                        echo "EC2 Public IP: ${env.EC2_IP}"
-                        env.DDB_TABLE = sh(script: "terraform output -raw dynamodb_table_name", returnStdout: true).trim()
-                        echo "DynamoDB Table: ${env.DDB_TABLE}"
-                    }
-                }
-            }
-        }
-
-        // 🐳 Étape 7 : Déploiement via Docker Compose
+        // 🚀 Étape 9 : Déploiement via Docker Compose
         stage('Deploy with Docker Compose') {
             steps {
                 echo 'Déploiement via Docker Compose...'
@@ -120,7 +116,7 @@ pipeline {
         }
     }
 
-    // 📬 Post-pipeline
+    // 📬 Étapes post-pipeline
     post {
         success {
             emailext(
