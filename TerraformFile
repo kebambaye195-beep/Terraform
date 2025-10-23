@@ -17,7 +17,7 @@ pipeline {
                     branches: [[name: '*/main']],
                     userRemoteConfigs: [[
                         credentialsId: 'github-jenkins',
-                        url: 'https://github.com/ndiayekhardiata2024/Depot_Jenkins.git'
+                        url: 'https://github.com/Aminata11/jenkins-test.git'
                     ]]
                 )
             }
