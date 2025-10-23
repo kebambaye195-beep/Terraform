@@ -1,36 +1,35 @@
 variable "region" {
-  description = "AWS region à utiliser"
+  description = "Région AWS"
   type        = string
-  default     = "us-west-2"
+}
+
+variable "vpc_cidr" {
+  description = "Plage d’adresses IP du VPC"
+  type        = string
+}
+
+variable "subnet_cidr" {
+  description = "Plage IP du subnet public"
+  type        = string
+}
+
+variable "ami_id" {
+  description = "ID de l’AMI (Amazon Linux 2 ou Ubuntu)"
+  type        = string
 }
 
 variable "instance_type" {
   description = "Type d’instance EC2"
   type        = string
-  default     = "t2.micro"
 }
 
-variable "aws_access_key" {
-  description = "Access key AWS"
+variable "db_user" {
+  description = "Nom d’utilisateur de la base de données"
   type        = string
-  default     = ""
 }
 
-variable "aws_secret_key" {
-  description = "Secret key AWS"
+variable "db_pass" {
+  description = "Mot de passe de la base de données"
   type        = string
-  default     = ""
+  sensitive   = true
 }
-
-variable "aws_session_token" {
-  description = "Session token AWS (si fourni)"
-  type        = string
-  default     = ""
-}
-
-variable "ec2_key_name" {
-  description = "Nom de la clé SSH existante"
-  type        = string
-  default     = "lab-key"
-}
-
