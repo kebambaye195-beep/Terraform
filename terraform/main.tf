@@ -1,6 +1,6 @@
 # 🔧 Provider AWS
 provider "aws" {
-  region = var.region  # Ex: "us-east-1"
+  region = var.region  # Ex: "us-west-2"
 }
 
 # 🌐 VPC
