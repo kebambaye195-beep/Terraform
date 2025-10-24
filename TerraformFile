@@ -3,12 +3,7 @@ parameters {
 }
 
 pipeline {
-    agent {
-        docker {
-            image 'hashicorp/terraform:1.9.7'
-            args '-u root:root' // Permet d’exécuter les commandes en root
-        }
-    }
+    agent any
 
     environment {
         PATH = "/usr/local/bin:$PATH"
