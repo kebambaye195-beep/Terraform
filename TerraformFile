@@ -36,10 +36,10 @@ pipeline {
                           echo "Terraform already installed"
                         fi
                         terraform version
-
                     '''
                 }
             }
+
 
         stage('Terraform Init') {
             steps {
