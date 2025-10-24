@@ -27,16 +27,18 @@ pipeline {
                 steps {
                     sh '''
                         if ! command -v terraform >/dev/null 2>&1; then
-                          echo "Installing Terraform..."
+                          echo "Installing Terraform locally..."
                           wget -q https://releases.hashicorp.com/terraform/1.9.7/terraform_1.9.7_linux_amd64.zip
                           unzip -o -q terraform_1.9.7_linux_amd64.zip
-                          sudo mv terraform /usr/local/bin/ 2>/dev/null || mv terraform /usr/local/bin/
+                          mkdir -p $WORKSPACE/bin
+                          mv terraform $WORKSPACE/bin/
+                          export PATH=$WORKSPACE/bin:$PATH
                           rm -f terraform_1.9.7_linux_amd64.zip LICENSE.txt
                         else
                           echo "Terraform already installed"
                         fi
                         terraform version
-                    '''
+
                 }
             }
 
