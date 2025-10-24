@@ -17,7 +17,7 @@ pipeline {
                     branches: [[name: '*/main']],
                     userRemoteConfigs: [[
                         credentialsId: 'credential-git',
-                        url: 'https://github.com/Aminata11/jenkins-test.git'
+                        url: 'https://github.com/kebambaye195-beep/Terraform.git'
                     ]]
                 )
             }
